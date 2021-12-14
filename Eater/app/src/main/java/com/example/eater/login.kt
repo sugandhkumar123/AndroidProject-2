@@ -1,5 +1,6 @@
 package com.example.eater
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -22,16 +23,7 @@ import retrofit2.Call
 import retrofit2.Response
 import retrofit2.Retrofit
 
-//import androidx.lifecycle.MutableLiveData
-//import androidx.lifecycle.ViewModel
 
-//Log.d("mytag2","ram2");
-//Log.d("mytag8",""+response.code());
-//Log.d("mytag3",""+response.body()?.email);
-//Log.d("mytag4",""+response.body()?.password);
-//Log.d("mytag5",""+response.body()?.token);
-//Log.d("mytag6",""+response.body()?.memberSince);
-//Log.d("mytag7",""+response.body()?.id);
 
 
 
@@ -52,74 +44,87 @@ class login : AppCompatActivity() {
         val progressBar =findViewById<ProgressBar>(R.id.progressBar)
         val viewOnProgress =findViewById<View>(R.id.viewOnProress)
 
-//        val call = retroService.userLogin("user1@gmail.com","password1")
+        buttonSignup.setOnClickListener {
+            val signUpIntent= Intent(this@login,signUp::class.java)
+            signUpIntent.putExtra("message1","This is Home Page")
+            signUpIntent.putExtra("message2","Hello")
+            this@login.startActivity(signUpIntent)
+        }
+
 
         buttonLogin.setOnClickListener {
 
-            progressBar.setVisibility(View.VISIBLE)
-            viewOnProgress.setVisibility(View.VISIBLE)
-            buttonLogin.setVisibility(View.INVISIBLE)
-            buttonSignup.setVisibility(View.INVISIBLE)
             email=inputEmail.text.toString()
             password=inputPassword.text.toString()
+            if(email.isNullOrEmpty() || password.isNullOrEmpty()){
+                Toast.makeText(this@login, "Please fill empty field", Toast.LENGTH_LONG).show()
+            }
+            else
+            {
 
-            // Create Retrofit
-            val retrofit = Retrofit.Builder()
-                .baseUrl("https://android-kanini-course.cloud")
-                .build()
+                progressBar.setVisibility(View.VISIBLE)
+                viewOnProgress.setVisibility(View.VISIBLE)
+                buttonLogin.setVisibility(View.INVISIBLE)
+                buttonSignup.setVisibility(View.INVISIBLE)
 
-            // Create Service
-            val service = retrofit.create(Api::class.java)
 
-            // Create JSON using JSONObject
-            val jsonObject = JSONObject()
-            jsonObject.put("email", email)
-            jsonObject.put("password", password)
+                // Create Retrofit
+                val retrofit = Retrofit.Builder()
+                    .baseUrl("https://android-kanini-course.cloud")
+                    .build()
 
-            // Convert JSONObject to String
-            val jsonObjectString = jsonObject.toString()
+                // Create Service
+                val service = retrofit.create(Api::class.java)
 
-            // Create RequestBody ( We're not using any converter, like GsonConverter, MoshiConverter e.t.c, that's why we use RequestBody )
-            val requestBody = jsonObjectString.toRequestBody("application/json".toMediaTypeOrNull())
+                // Create JSON using JSONObject
+                val jsonObject = JSONObject()
+                jsonObject.put("email", email)
+                jsonObject.put("password", password)
 
-            CoroutineScope(Dispatchers.IO).launch {
-                // Do the POST request and get response
-                val response = service.userLogin(requestBody)
+                // Convert JSONObject to String
+                val jsonObjectString = jsonObject.toString()
 
-                withContext(Dispatchers.Main) {
-                    if (response.isSuccessful) {
+                // Create RequestBody ( We're not using any converter, like GsonConverter, MoshiConverter e.t.c, that's why we use RequestBody )
+                val requestBody = jsonObjectString.toRequestBody("application/json".toMediaTypeOrNull())
 
-                        // Convert raw JSON to pretty JSON using GSON library
-                        val gson = GsonBuilder().setPrettyPrinting().create()
-                        val prettyJson = gson.toJson(
-                            JsonParser.parseString(
-                                response.body()
-                                   ?.string() // About this thread blocking annotation : https://github.com/square/retrofit/issues/3255
+                CoroutineScope(Dispatchers.IO).launch {
+                    // Do the POST request and get response
+                    val response = service.userLogin(requestBody)
+
+                    withContext(Dispatchers.Main) {
+                        if (response.isSuccessful) {
+
+                            // Convert raw JSON to pretty JSON using GSON library
+                            val gson = GsonBuilder().setPrettyPrinting().create()
+                            val prettyJson = gson.toJson(
+                                JsonParser.parseString(
+                                    response.body()
+                                       ?.string() // About this thread blocking annotation : https://github.com/square/retrofit/issues/3255
+                                )
                             )
-                        )
-                        progressBar.setVisibility(View.INVISIBLE)
-                        Log.d("Pretty Printed JSON :", prettyJson)
-                        Log.d("Pretty Printed JSON :", prettyJson)
-                        Toast.makeText(this@login, "Login Successfully", Toast.LENGTH_LONG).show()
+                            progressBar.setVisibility(View.INVISIBLE)
+                            Log.d("Pretty Printed JSON :", prettyJson)
+                            Toast.makeText(this@login, "Login Successfully", Toast.LENGTH_LONG).show()
 
-//                        val intent = Intent(this@MainActivity, DetailsActivity::class.java)
-//                        intent.putExtra("json_results", prettyJson)
-//                        this@MainActivity.startActivity(intent)
-
-                    } else {
-                        buttonSignup.setVisibility(View.VISIBLE)
-                        buttonLogin.setVisibility(View.VISIBLE)
-                        progressBar.setVisibility(View.INVISIBLE)
-                        viewOnProgress.setVisibility(View.INVISIBLE)
-                        Log.e("RETROFIT_ERROR", response.code().toString())
-                        Toast.makeText(this@login, "Invalid Credential", Toast.LENGTH_LONG).show()
+                            val loginIntent= Intent(this@login,homePage::class.java)
+                            loginIntent.putExtra("message1","This is Home Page")
+                            loginIntent.putExtra("message2",prettyJson)
+                            this@login.startActivity(loginIntent)
 
 
+                        }
+                        else{
+                            buttonSignup.setVisibility(View.VISIBLE)
+                            buttonLogin.setVisibility(View.VISIBLE)
+                            progressBar.setVisibility(View.INVISIBLE)
+                            viewOnProgress.setVisibility(View.INVISIBLE)
+                            Log.e("RETROFIT_ERROR", response.code().toString())
+                            Toast.makeText(this@login, "Invalid Credential", Toast.LENGTH_LONG).show()
+                        }
                     }
                 }
+
             }
-
-
         }
     }
 }
