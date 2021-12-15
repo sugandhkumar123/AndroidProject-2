@@ -25,8 +25,6 @@ import retrofit2.Retrofit
 
 
 
-
-
 class login : AppCompatActivity() {
 
     var email = ""
@@ -44,10 +42,12 @@ class login : AppCompatActivity() {
         val progressBar =findViewById<ProgressBar>(R.id.progressBar)
         val viewOnProgress =findViewById<View>(R.id.viewOnProress)
 
+//        inputPassword.setTransformationMethod(new PasswordTransformationMethod())
+
         buttonSignup.setOnClickListener {
             val signUpIntent= Intent(this@login,signUp::class.java)
-            signUpIntent.putExtra("message1","This is Home Page")
-            signUpIntent.putExtra("message2","Hello")
+//            signUpIntent.putExtra("message1","This is Home Page")
+//            signUpIntent.putExtra("message2","Hello")
             this@login.startActivity(signUpIntent)
         }
 

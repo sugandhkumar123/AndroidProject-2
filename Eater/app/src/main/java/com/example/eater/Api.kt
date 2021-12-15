@@ -14,4 +14,7 @@ interface Api {
     @POST("/eaterapp/login")
     suspend fun userLogin(@Body requestBody: RequestBody) : Response<ResponseBody>
 
+    @POST("/eaterapp/register")
+    suspend fun userRegister(@Body requestBody: RequestBody) : Response<ResponseBody>
+
 }

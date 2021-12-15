@@ -18,10 +18,10 @@
             android:name=".signUp"
             android:exported="false" />
         <activity
-            android:name=".landingPage"
+            android:name=".login"
             android:exported="false" />
         <activity
-            android:name=".login"
+            android:name=".landingPage"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
