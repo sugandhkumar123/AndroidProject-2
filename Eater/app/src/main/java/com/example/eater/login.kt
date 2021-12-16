@@ -1,6 +1,8 @@
 package com.example.eater
 
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -29,6 +31,8 @@ class login : AppCompatActivity() {
 
     var email = ""
     var password = ""
+    lateinit var sharedPreference : SharedPreferences
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,6 +53,7 @@ class login : AppCompatActivity() {
 //            signUpIntent.putExtra("message1","This is Home Page")
 //            signUpIntent.putExtra("message2","Hello")
             this@login.startActivity(signUpIntent)
+            //finish()
         }
 
 
@@ -61,7 +66,6 @@ class login : AppCompatActivity() {
             }
             else
             {
-
                 progressBar.setVisibility(View.VISIBLE)
                 viewOnProgress.setVisibility(View.VISIBLE)
                 buttonLogin.setVisibility(View.INVISIBLE)
@@ -102,16 +106,25 @@ class login : AppCompatActivity() {
                                        ?.string() // About this thread blocking annotation : https://github.com/square/retrofit/issues/3255
                                 )
                             )
+
+                            val userInfo = JSONObject(prettyJson)
+                            sharedPreference =  getSharedPreferences("SaveData_Locally", Context.MODE_PRIVATE)
+
+                            var editor:SharedPreferences.Editor = sharedPreference.edit()
+                            editor.putInt("id",userInfo.getInt("id"))
+                            editor.putString("token",userInfo.getString("token"))
+                            editor.putString("email",userInfo.getString("email"))
+                            editor.putLong("l",userInfo.getLong("memberSince"))
+                            editor.putBoolean("loginStatus",true)
+                            editor.commit()
+
                             progressBar.setVisibility(View.INVISIBLE)
                             Log.d("Pretty Printed JSON :", prettyJson)
                             Toast.makeText(this@login, "Login Successfully", Toast.LENGTH_LONG).show()
 
                             val loginIntent= Intent(this@login,homePage::class.java)
-                            loginIntent.putExtra("message1","This is Home Page")
-                            loginIntent.putExtra("message2",prettyJson)
                             this@login.startActivity(loginIntent)
-
-
+                            //finish()
                         }
                         else{
                             buttonSignup.setVisibility(View.VISIBLE)

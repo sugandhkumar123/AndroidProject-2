@@ -1,24 +1,39 @@
 package com.example.eater
 
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
+import android.util.Log
 
 
 class landingPage : AppCompatActivity() {
+
+    lateinit var preference :SharedPreferences
+    var islogin=false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_landing_page)
 
+        preference =  getSharedPreferences("SaveData_Locally", Context.MODE_PRIVATE)
+        islogin=preference.getBoolean("loginStatus",false);
+        val handler = Handler()
 
         val runnable = Runnable {
-            val landingIntent = Intent(this@landingPage, login::class.java)
-            this@landingPage.startActivity(landingIntent)
+            if(islogin){
+                val landingIntent1 = Intent(this,homePage::class.java)
+                this.startActivity(landingIntent1)
+//              finish()
+            }
+            else{
+                val landingIntent2 = Intent(this,login::class.java)
+                this.startActivity(landingIntent2)
+//              finish()
+            }
         }
-        val handler = Handler()
-        handler.postDelayed(runnable, 1000)
-
+        handler.postDelayed(runnable, 3000)
     }
 }
